@@ -1,0 +1,21 @@
+{
+  "expected_feature_order": [
+    "age",
+    "trestbps",
+    "chol",
+    "thalach",
+    "oldpeak",
+    "sex",
+    "cp",
+    "fbs",
+    "restecg",
+    "exang",
+    "slope",
+    "ca",
+    "thal"
+  ],
+  "threshold": 0.3871719298250711,
+  "created_at": "2025-11-13 18:36:17",
+  "random_state": 42,
+  "model_type": "RandomForestClassifier"
+}
