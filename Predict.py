@@ -1,11 +1,6 @@
 import requests
 
-USE_CLOUD = True
-
-if USE_CLOUD:
-    url = "https://<your-username>.pythonanywhere.com/predict"
-else:
-    url = "http://127.0.0.1:8000/predict"
+url = "http://127.0.0.1:8000/predict"
 
 payload = {
     "payload": {
