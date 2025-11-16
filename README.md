@@ -193,9 +193,7 @@ Response:
 ```json
 {
   "prediction": 1,
-  "probability": 0.64,
-  "threshold": 0.387,
-  "risk": "High Risk"
+  "probability": 0.64
 }
 ```
 
@@ -212,4 +210,17 @@ This script sends a sample patient record to the /predict endpoint and prints th
 
 If everything is working correctly, you should see an output similar to:
 
-`risk: "High Risk"`
+`Risk Level: High`
+
+
+
+## Known Limitation 
+- Some features (thal, cp) are categorical but encoded numerically.
+- API doesn’t implement authentication or rate limiting.
+
+
+
+## Next Steps
+- Deploy to AWS Elastic Beanstalk
+- Add a simple HTML UI for patient input
+- Add monitoring (logging, latency, error tracking)
