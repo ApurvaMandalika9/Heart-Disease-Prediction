@@ -214,7 +214,7 @@ If everything is working correctly, you should see an output similar to:
 
 
 
-## Known Limitation 
+## Known Limitations 
 - Some features (thal, cp) are categorical but encoded numerically.
 - API doesn’t implement authentication or rate limiting.
 
