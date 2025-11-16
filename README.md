@@ -54,11 +54,11 @@ The dataset is balanced enough for standard classification metrics.
 ## EDA Summary
 
 Key observations from exploratory data analysis:
-1. Chest pain type (cp) strongly correlates with heart disease.
-2. thalach (max heart rate) is typically higher in patients with disease.
-3. oldpeak and exang show clear separation between classes.
+1. `cp` (Chest pain type) showed strong class separation and is one of the most informative categorical features. 
+2. `thalach` (max heart rate) had the strongest positive correlation with heart disease. 
+3. `oldpeak` shows strong separation; `exang` shows moderate separation between classes.
 4. No severe missing values; minor preprocessing required.
-5. Features vary in scale → Standardization helps model performance.
+5. Standardization improved the performance of linear models; the final model (Random Forest) is scale-invariant but still benefited from consistent preprocessing.
 
 EDA was performed in jupyter notebook and later exported to `heart-disease.py` which is added to this repo.
 
@@ -70,18 +70,146 @@ Models evaluated
 2. Random Forest (best model)
 3. XGBoost (overfitted -> rejected)
 
-Why Random Forest performed best?
-- Handles non-linear interactions
-- Robust to noise
-- Works well with 12–20 features
-- Less sensitive to scaling issues
+### Best Model Performance
 
-Best Model Performance 
+The final model selected for this project is a **Random Forest Classifier**, chosen for its strong predictive performance and stability.
+
+Using 5-fold cross-validation, the Random Forest achieved:
+- **ROC-AUC Mean :** 0.9540  
+- **ROC-AUC Std:** 0.0050  
+
+This indicates both **high discriminative ability** and **consistent performance** across folds.
+
+On Test, the Random Forest achieved:
+- **Test ROC-AUC:** 0.9542 
+- **Test PR-AUC:** 0.9479
+
+## Threshold Selection & Test Evaluation
+
+Instead of using the default probability threshold of **0.50**, a custom threshold was chosen to maximize the **F1-score** on a validation split of the training data.
+
+### Threshold Selection
+To find the optimal balance between **precision** and **recall**, the threshold was tuned on the validation portion of the training data.  
+
+The threshold that maximized F1 was: **`0.3871719298250712`**
+
+This lower threshold increases sensitivity to high-risk patients, which is desirable in medical screening tasks.
+
+
+##  Final Model Evaluation on Test Set
+
+After selecting the threshold, the model was **refit on the full training split** and evaluated on the held-out test set.
+
+### Test Metrics (using threshold = 0.387)
+
 
 | **Metric**         | **Score**                                   |
 |--------------------|---------------------------------------------|
-| **ROC-AUC (Test)** | ≈ 0.90–0.95                                 |
-| **PR-AUC**         | High                                        |
-| **Accuracy**       | Consistent across cross-validation folds    |
+| **Threshold**      | 0.387                                       |
+| **Accuracy**       | 0.863                                       |
+| **Precision**      | 0.808                                       |
+| **Recall**         | 0.962                                       |
+| **F1**             | 0.878                                       |
+| **ROC-AUC**        | 0.954                                       |
 
-**ROC-AUC** was used as the primary evaluation metric because the dataset is relatively balanced.
+
+**Primary Metric: ROC-AUC**  
+Chosen because the dataset is relatively balanced and ROC-AUC provides a robust measure of ranking performance.
+
+The model demonstrates a **high recall**, which is important in medical risk prediction—fewer high-risk patients are missed.  
+Precision remains solid, reflecting a balanced trade-off between false positives and false negatives.
+
+
+## Project Architecture
+
+![Project Architecture](FlowChart.png)
+
+
+## How to Run Locally
+
+1) Create a virtual environment
+```bash
+python -m venv heart-env
+heart-env\Scripts\activate      
+```
+
+2) Install dependencies
+```bash 
+pip install -r requirements.txt
+```
+
+3) Run the API locally
+```bash 
+python src/app.py
+```
+
+API runs at: http://127.0.0.1:8000
+
+
+Test health: http://127.0.0.1:8000/health
+
+
+## Run with Docker
+
+Use powershell, not cmd
+
+Build image 
+```bash 
+docker build -t heart-api .
+```
+
+Run container
+```bash 
+docker run -p 8000:8000 heart-api
+```
+
+## API Usage Example
+
+POST /predict
+
+Request JSON:
+```json
+{
+  "payload": {
+    "age": 63,
+    "sex": 1,
+    "cp": 3,
+    "trestbps": 145,
+    "chol": 233,
+    "fbs": 1,
+    "restecg": 0,
+    "thalach": 150,
+    "exang": 0,
+    "oldpeak": 2.3,
+    "slope": 0,
+    "ca": 0,
+    "thal": 1
+  }
+}
+```
+
+
+Response:
+```json
+{
+  "prediction": 1,
+  "probability": 0.64,
+  "threshold": 0.387,
+  "risk": "High Risk"
+}
+```
+
+### Testing the API with `Predict.py`
+
+You can test the deployed API easily by running the provided `Predict.py` script.
+
+Open a **new terminal** (while the API is running in another terminal or Docker container), then run:
+
+```bash
+python Predict.py
+```
+This script sends a sample patient record to the /predict endpoint and prints the model’s response.
+
+If everything is working correctly, you should see an output similar to:
+
+`risk: "High Risk"`
