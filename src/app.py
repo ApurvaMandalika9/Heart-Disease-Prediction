@@ -1,17 +1,19 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import pandas as pd
 import joblib
-import os
+import os, json
+
+
 
 app = Flask(__name__)
 MODEL_PATH = os.getenv("MODEL_PATH", "models/heart_model.joblib")
 model = joblib.load(MODEL_PATH)
 
-# Expected fields (same as training)
-EXPECTED = [
-    "age","sex","cp","trestbps","chol","fbs","restecg",
-    "thalach","exang","oldpeak","slope","ca","thal"
-]
+with open("models/model_meta.json", "r") as f:
+    meta = json.load(f)
+
+THRESHOLD = float(meta["threshold"])
+EXPECTED = meta["expected_feature_order"]
 
 @app.route("/health", methods=["GET"])
 def health():
@@ -36,7 +38,7 @@ def predict():
         X = pd.DataFrame([row], columns=EXPECTED)
         if hasattr(model, "predict_proba"):
             p = float(model.predict_proba(X)[0,1])
-            y = int(p >= 0.5)
+            y = int(p >= THRESHOLD)
             return jsonify({"prediction": y, "probability": p})
         else:
             y = model.predict(X)[0]

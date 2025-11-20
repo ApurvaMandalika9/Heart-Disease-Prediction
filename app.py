@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import pandas as pd
 import joblib
 import os, json
@@ -20,6 +20,10 @@ EXPECTED = meta["expected_feature_order"]
 #    "age","sex","cp","trestbps","chol","fbs","restecg",
 #    "thalach","exang","oldpeak","slope","ca","thal"
 #]
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 @app.route("/health", methods=["GET"])
 def health():

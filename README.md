@@ -151,7 +151,7 @@ Test health: http://127.0.0.1:8000/health
 
 ## Run with Docker
 
-Use powershell, not cmd
+Make sure Docker Desktop is running before building or running the container. Use powershell for the following commands, not cmd.
 
 Build image 
 ```bash 
