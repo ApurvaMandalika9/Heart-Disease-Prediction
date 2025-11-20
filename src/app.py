@@ -1,9 +1,7 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 import pandas as pd
 import joblib
 import os, json
-
-
 
 app = Flask(__name__)
 MODEL_PATH = os.getenv("MODEL_PATH", "models/heart_model.joblib")
