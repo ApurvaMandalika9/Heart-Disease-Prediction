@@ -50,6 +50,8 @@ Features include:
 
 The dataset is balanced enough for standard classification metrics.
 
+The dataset used is added to this Repo.
+
 
 ## EDA Summary
 
