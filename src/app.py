@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 import os, json
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../templates")
 MODEL_PATH = os.getenv("MODEL_PATH", "models/heart_model.joblib")
 model = joblib.load(MODEL_PATH)
 

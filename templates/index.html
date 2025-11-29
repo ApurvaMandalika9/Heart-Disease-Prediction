@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Heart Disease Risk Prediction</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      background: #f7f7f9;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    input, select {
+      padding: 0.4rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+    button {
+      margin-top: 1.25rem;
+      padding: 0.6rem 1.2rem;
+      background: #2563eb;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+    .result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 6px;
+      display: none;
+    }
+    .result.low {
+      background: #e0f7e9;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+    .result.high {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+    .prob {
+      font-weight: 600;
+    }
+    .error {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Heart Disease Risk Prediction</h1>
+
+  <div class="card">
+    <form id="predict-form">
+      <div class="grid">
+        <div class="field">
+          <label for="age">Age</label>
+          <input type="number" id="age" name="age" min="1" max="120" required />
+        </div>
+
+        <div class="field">
+          <label for="sex">Sex</label>
+          <select id="sex" name="sex" required>
+            <option value="">Select</option>
+            <option value="1">Male</option>
+            <option value="0">Female</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="cp">Chest Pain Type (cp)</label>
+          <select id="cp" name="cp" required>
+            <option value="">Select</option>
+            <option value="0">0 - Typical angina</option>
+            <option value="1">1 - Atypical angina</option>
+            <option value="2">2 - Non-anginal pain</option>
+            <option value="3">3 - Asymptomatic</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="trestbps">Resting BP (trestbps)</label>
+          <input type="number" id="trestbps" name="trestbps" required />
+        </div>
+
+        <div class="field">
+          <label for="chol">Cholesterol (chol)</label>
+          <input type="number" id="chol" name="chol" required />
+        </div>
+
+        <div class="field">
+          <label for="fbs">Fasting Blood Sugar (fbs)</label>
+          <select id="fbs" name="fbs" required>
+            <option value="">Select</option>
+            <option value="1">&gt; 120 mg/dl</option>
+            <option value="0">&le; 120 mg/dl</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="restecg">Resting ECG (restecg)</label>
+          <select id="restecg" name="restecg" required>
+            <option value="">Select</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="thalach">Max Heart Rate (thalach)</label>
+          <input type="number" id="thalach" name="thalach" required />
+        </div>
+
+        <div class="field">
+          <label for="exang">Exercise-Induced Angina (exang)</label>
+          <select id="exang" name="exang" required>
+            <option value="">Select</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="oldpeak">Oldpeak</label>
+          <input type="number" id="oldpeak" name="oldpeak" step="0.1" required />
+        </div>
+
+        <div class="field">
+          <label for="slope">Slope</label>
+          <select id="slope" name="slope" required>
+            <option value="">Select</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="ca">Number of Vessels (ca)</label>
+          <select id="ca" name="ca" required>
+            <option value="">Select</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="thal">Thal</label>
+          <select id="thal" name="thal" required>
+            <option value="">Select</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" id="submit-btn">Predict Risk</button>
+    </form>
+
+    <div id="result" class="result"></div>
+    <div id="error" class="error"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("predict-form");
+    const resultDiv = document.getElementById("result");
+    const errorDiv = document.getElementById("error");
+    const submitBtn = document.getElementById("submit-btn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorDiv.style.display = "none";
+      resultDiv.style.display = "none";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Predicting...";
+
+      // Build payload from form
+      const payload = {
+        age: Number(document.getElementById("age").value),
+        sex: Number(document.getElementById("sex").value),
+        cp: Number(document.getElementById("cp").value),
+        trestbps: Number(document.getElementById("trestbps").value),
+        chol: Number(document.getElementById("chol").value),
+        fbs: Number(document.getElementById("fbs").value),
+        restecg: Number(document.getElementById("restecg").value),
+        thalach: Number(document.getElementById("thalach").value),
+        exang: Number(document.getElementById("exang").value),
+        oldpeak: Number(document.getElementById("oldpeak").value),
+        slope: Number(document.getElementById("slope").value),
+        ca: Number(document.getElementById("ca").value),
+        thal: Number(document.getElementById("thal").value)
+      };
+
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ payload })
+        });
+
+        if (!response.ok) {
+          throw new Error("API error: " + response.status);
+        }
+
+        const data = await response.json();
+        const prediction = data.prediction;
+        const probability = data.probability;
+
+        const probPercent = (probability * 100).toFixed(1) + "%";
+
+        let riskLabel, riskClass;
+        if (prediction === 1 || prediction === "1") {
+          riskLabel = "High Risk of Heart Disease";
+          riskClass = "high";
+        } else {
+          riskLabel = "Low Risk of Heart Disease";
+          riskClass = "low";
+        }
+
+        resultDiv.className = "result " + riskClass;
+        resultDiv.innerHTML = `
+          <div><strong>${riskLabel}</strong></div>
+          <div class="prob">Predicted probability: ${probPercent}</div>
+        `;
+        resultDiv.style.display = "block";
+      } catch (err) {
+        console.error(err);
+        errorDiv.textContent = "Something went wrong while calling the API. Please try again.";
+        errorDiv.style.display = "block";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Predict Risk";
+      }
+    });
+  </script>
+</body>
+</html>
